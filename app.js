@@ -71,6 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
             eventCard.className = 'event-card';
 
             const imageUrl = `${config.IMAGE_BASE_URL}${event.pic}`;
+            const seatStatus = event.KoltukKontrol > 0 
+                ? `<span class="seat-count available">${event.KoltukKontrol} koltuk kaldı</span>`
+                : '<span class="seat-count sold-out">Tüm koltuklar doldu</span>';
             
             eventCard.innerHTML = `
                 <div class="image-container">
@@ -81,7 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h2 class="event-title">${event.etkinlik}</h2>
                     <p class="event-date">${event.tarih} - ${event.saat}</p>
                     <p class="event-venue">${event.mekan}</p>
-                    <a href="${config.SITE_BASE_URL}/${event.url}" target="_blank" class="event-link">Bilet Al</a>
+                    ${seatStatus}
+                    <a href="${config.SITE_BASE_URL}/tr-tr/${event.tipForUrl}/${event.url}" target="_blank" class="event-link">Bilet Al</a>
                 </div>
             `;
 

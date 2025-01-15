@@ -359,4 +359,25 @@ h1 {
 
 .toggle-calendar.active .toggle-icon {
     transform: rotate(180deg);
+}
+
+.seat-count {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin: 0.5rem 0;
+}
+
+.seat-count.available {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #90caf9;
+}
+
+.seat-count.sold-out {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
 } 
