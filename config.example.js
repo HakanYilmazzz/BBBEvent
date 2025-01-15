@@ -1,0 +1,8 @@
+const config = {
+    API_URL: 'YOUR_API_URL_HERE',
+    PROXY_URL: 'YOUR_PROXY_URL_HERE',
+    IMAGE_BASE_URL: 'YOUR_IMAGE_BASE_URL_HERE',
+    SITE_BASE_URL: 'YOUR_SITE_BASE_URL_HERE'
+};
+
+window.config = config; 

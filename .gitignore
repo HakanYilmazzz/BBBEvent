@@ -1,0 +1,11 @@
+# Config dosyası
+config.js
+
+# IDE ve sistem dosyaları
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Node modülleri (eğer kullanılıyorsa)
+node_modules/ 
