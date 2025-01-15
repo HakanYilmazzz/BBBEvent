@@ -65,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h2 class="event-title">${event.etkinlik}</h2>
                     <p class="event-date">${event.tarih} - ${event.saat}</p>
                     <p class="event-venue">${event.mekan}</p>
-                    <a href="${config.SITE_BASE_URL}/${event.url}" target="_blank" class="event-link">Bilet Al</a>
                 </div>
             `;
 

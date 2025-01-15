@@ -24,7 +24,6 @@ cp config.example.js config.js
 - Mekana göre filtreleme
 - Görsel hover efektleri
 - Responsive tasarım
-- Bilet alma bağlantıları
 
 ## Teknolojiler
 
