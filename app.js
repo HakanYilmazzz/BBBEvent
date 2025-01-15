@@ -2,7 +2,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const eventsContainer = document.getElementById('events-container');
     const loadingElement = document.getElementById('loading');
     const venueFilter = document.getElementById('venue-filter');
+    const calendarDays = document.getElementById('calendar-days');
+    const currentMonthElement = document.getElementById('currentMonth');
+    const selectedDateEvents = document.getElementById('selected-date-events');
+    const prevMonthBtn = document.getElementById('prevMonth');
+    const nextMonthBtn = document.getElementById('nextMonth');
+    const toggleCalendarBtn = document.getElementById('toggleCalendar');
+    const calendarSection = document.querySelector('.calendar-section');
+
     let allEvents = [];
+    let currentDate = new Date();
+    let selectedDate = null;
+
+    // Takvimi aç/kapat
+    toggleCalendarBtn.addEventListener('click', () => {
+        calendarSection.classList.toggle('collapsed');
+        toggleCalendarBtn.classList.toggle('active');
+    });
 
     const fetchEvents = async () => {
         try {
@@ -65,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h2 class="event-title">${event.etkinlik}</h2>
                     <p class="event-date">${event.tarih} - ${event.saat}</p>
                     <p class="event-venue">${event.mekan}</p>
+                    <a href="${config.SITE_BASE_URL}/${event.url}" target="_blank" class="event-link">Bilet Al</a>
                 </div>
             `;
 
@@ -83,6 +100,104 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const getEventsForDate = (date) => {
+        return allEvents.filter(event => {
+            const eventDate = new Date(event.SeanceDate);
+            return eventDate.toDateString() === date.toDateString();
+        });
+    };
+
+    const updateCalendar = () => {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        
+        // Ay adını güncelle
+        const monthNames = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 
+                          'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+        currentMonthElement.textContent = `${monthNames[month]} ${year}`;
+
+        // Ayın ilk gününü ve toplam gün sayısını hesapla
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const totalDays = lastDay.getDate();
+
+        // Takvim grid'ini oluştur
+        let calendarHTML = '';
+        
+        // Boş günleri ekle (Pazartesi = 1, Pazar = 0)
+        let firstDayOfWeek = firstDay.getDay() || 7;
+        for (let i = 1; i < firstDayOfWeek; i++) {
+            calendarHTML += '<div class="calendar-day empty"></div>';
+        }
+
+        // Günleri ekle
+        for (let day = 1; day <= totalDays; day++) {
+            const date = new Date(year, month, day);
+            const events = getEventsForDate(date);
+            const hasEvents = events.length > 0;
+            const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
+            
+            calendarHTML += `
+                <div class="calendar-day ${hasEvents ? 'has-event' : ''} ${isSelected ? 'selected' : ''}" 
+                     data-date="${date.toISOString()}">
+                    ${day}
+                    ${hasEvents ? `
+                        <div class="event-dot"></div>
+                        <div class="event-count">${events.length} etkinlik</div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        calendarDays.innerHTML = calendarHTML;
+
+        // Gün tıklama olaylarını ekle
+        document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
+            day.addEventListener('click', () => {
+                const date = new Date(day.dataset.date);
+                selectedDate = date;
+                const events = getEventsForDate(date);
+                
+                // Seçili günü güncelle
+                document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+                day.classList.add('selected');
+
+                // Seçili gün etkinliklerini göster
+                if (events.length > 0) {
+                    selectedDateEvents.innerHTML = `
+                        <h3>${day.textContent.split('\n')[0]} ${monthNames[month]} ${year}</h3>
+                        ${events.map(event => `
+                            <div class="event-mini-card">
+                                <div class="event-mini-title">${event.etkinlik}</div>
+                                <div class="event-mini-info">
+                                    ${event.saat} - ${event.mekan}
+                                </div>
+                            </div>
+                        `).join('')}
+                    `;
+                    selectedDateEvents.classList.add('show');
+                } else {
+                    selectedDateEvents.innerHTML = `
+                        <h3>${day.textContent.split('\n')[0]} ${monthNames[month]} ${year}</h3>
+                        <p>Bu tarihte etkinlik bulunmuyor.</p>
+                    `;
+                    selectedDateEvents.classList.add('show');
+                }
+            });
+        });
+    };
+
+    // Ay değiştirme olayları
+    prevMonthBtn.addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        updateCalendar();
+    });
+
+    nextMonthBtn.addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        updateCalendar();
+    });
+
     venueFilter.addEventListener('change', filterEvents);
 
     const init = async () => {
@@ -91,6 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
             allEvents = events;
             updateVenueFilter(events);
             displayEvents(events);
+            updateCalendar();
         }
     };
 
